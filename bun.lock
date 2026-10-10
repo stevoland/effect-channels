@@ -50,6 +50,27 @@
         "typescript": "catalog:",
       },
     },
+    "examples/celld": {
+      "name": "celld",
+      "dependencies": {
+        "@cloudflare/computer": "catalog:",
+        "@effect/platform-node": "catalog:",
+        "@effect/sql-sqlite-do": "catalog:",
+        "@humanlayer/channels-alchemy-cloudflare": "workspace:*",
+        "@humanlayer/channels-delivery": "workspace:*",
+        "@humanlayer/channels-github": "workspace:*",
+        "@humanlayer/fold-agent": "catalog:",
+        "@humanlayer/fold-core": "catalog:",
+        "@platformatic/vfs": "catalog:",
+        "alchemy": "catalog:",
+        "effect": "catalog:",
+      },
+      "devDependencies": {
+        "@cloudflare/workers-types": "catalog:",
+        "@types/bun": "catalog:",
+        "typescript": "catalog:",
+      },
+    },
     "packages/alchemy-cloudflare": {
       "name": "@humanlayer/channels-alchemy-cloudflare",
       "version": "0.0.0",
@@ -903,6 +924,8 @@
     "capnweb": ["capnweb@0.12.0", "", {}, "sha512-jgZ/LMtMVTi+RVlooIslH78Gg23XbDTdvcLghWx3oz17D6u5GuJARt+uhZk/wcTo+f81eeabfnow4d3zLBj+JQ=="],
 
     "ccount": ["ccount@2.0.1", "", {}, "sha512-eyrF0jiFpY+3drT6383f1qhkbGsLSifNAjA61IUjZjmLCWjItY6LB9ft9YhoDgwfmclB2zhu51Lc7+95b8NRAg=="],
+
+    "celld": ["celld@workspace:examples/celld"],
 
     "chai": ["chai@6.2.2", "", {}, "sha512-NUPRluOfOiTKBKvWPtSD4PhFvWCqOi0BGStNWs57X9js7XGTprSmFoz5F0tWhR4WPjNeR9jXqdC7/UpSJTnlRg=="],
 

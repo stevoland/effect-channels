@@ -1,0 +1,20 @@
+{
+	"name": "humanlayer-channels-celld",
+	"main": "dist/entry.js",
+	"no_bundle": true,
+	"compatibility_date": "2026-10-01",
+	"compatibility_flags": ["nodejs_compat"],
+	"durable_objects": {
+		"bindings": [
+			{ "name": "DeliveryMailbox", "class_name": "DeliveryMailbox" },
+			{ "name": "AgentSession", "class_name": "AgentSession" },
+			{ "name": "Computer", "class_name": "Computer" }
+		]
+	},
+	"migrations": [{ "tag": "v1", "new_sqlite_classes": ["DeliveryMailbox", "AgentSession", "Computer"] }],
+	"services": [{ "binding": "DELIVERY_API", "service": "humanlayer-channels-celld" }],
+	"worker_loaders": [{ "binding": "LOADER" }],
+	"vars": {
+		"ALCHEMY_PHASE": "runtime"
+	}
+}
