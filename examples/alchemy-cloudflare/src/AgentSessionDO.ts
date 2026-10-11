@@ -6,7 +6,6 @@ import {
 	type FoldEventLog,
 	defineAgent,
 	eventLogSource,
-	openaiModel,
 	resumeSession,
 	skillTool,
 	startSession,
@@ -16,6 +15,7 @@ import type { RuntimeContext } from 'alchemy/RuntimeContext'
 import { Config, Context, Effect, FileSystem, Layer, Match, Option, Path, Predicate, Schema, Stream } from 'effect'
 import { HttpClient } from 'effect/http'
 
+import { AgentModel } from './AgentModel'
 import { bashTool } from './BashTool'
 import { checkTools } from './CheckTools'
 import { WORKSPACE_ROOT } from './computer/Contract'
@@ -37,7 +37,6 @@ import { SessionExpiry } from './SessionExpiry'
 import { RunRecovery } from './SessionRecovery'
 import { Workspace, repositoryDirectoryName } from './Workspace'
 
-const MODEL = 'gpt-6.1-sol'
 /** The highest comment, review, and line comment IDs the agent has been shown. */
 const DISCUSSION_SEEN_KEY = 'discussion_seen'
 const HOME = '/root'
@@ -176,12 +175,6 @@ export class AgentSessions extends Context.Service<
 	}
 >()('alchemy-cloudflare/AgentSessions') {}
 
-/** Fold's model: GPT-6.1 Sol through the OpenAI API, at medium reasoning. */
-const foldModel = Effect.gen(function* () {
-	const apiKey = yield* Config.Redacted('OPENAI_API_KEY').pipe(Effect.orDie)
-	return openaiModel({ apiKey, model: MODEL, reasoning: 'medium' })
-})
-
 /** The services the agent's tools take from the context its Fold session starts in. */
 type FoldHost =
 	| FileSystem.FileSystem
@@ -203,7 +196,7 @@ const AgentConversationLive = Layer.effect(
 	Effect.gen(function* () {
 		const workspace = yield* Workspace
 		const { storage } = (yield* Cloudflare.DurableObjectState).raw
-		const model = yield* foldModel
+		const model = yield* AgentModel
 		const botUserId = yield* Config.schema(GitHubId, 'GITHUB_BOT_USER_ID').pipe(Effect.orDie)
 		const github = yield* GitHubApi
 		/** Fold's tools read their services from the context the session starts in, so it starts in this object's. */

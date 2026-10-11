@@ -11,7 +11,7 @@
  * A plain Durable Object rather than an Effect one, because `withWorkspace` must wrap the
  * `cloudflare:workers` class.
  */
-import { type DurableObjectStorageLike, getWorkspace, withWorkspace } from '@cloudflare/computer'
+import { type DurableObjectStorageLike, getWorkspace, withWorkspace, type WorkspaceStub } from '@cloudflare/computer'
 import {
 	CloudflareContainerBackend,
 	type CloudflareContainerBackendOptions,
@@ -19,12 +19,12 @@ import {
 	type WorkspaceContainerAPI,
 	withWorkspaceContainer,
 } from '@cloudflare/computer/backends/container'
-import { WorkerShellBackend } from '@cloudflare/computer/backends/worker-shell'
 import { createGitClient, type GitClient } from '@cloudflare/computer/git'
 import jq from '@cloudflare/computer/shell/jq'
 import { DurableObject } from 'cloudflare:workers'
 import { Array as Arr, Data, Effect, Option, Schema } from 'effect'
 
+import { createComputerShell } from './ComputerShell'
 import {
 	type Backend,
 	type CommandInput,
@@ -196,18 +196,24 @@ const prepareRepo = async (git: GitClient, fs: RepoFiles, input: PrepareRepoInpu
 const abortQuietly = (abort: () => void) => Effect.runSync(Effect.ignore(Effect.try(abort)))
 
 class ComputerBase extends withWorkspaceContainer(class extends DurableObject<Env> {}) {
+	/** Implemented by withWorkspace, which wraps this base before the shell connects. */
+	declare __getWorkspaceStub: () => Promise<WorkspaceStub>
 	/**
 	 * For withWorkspace's options, which see the instance but not `ctx` or `env`: DurableObject keeps them
 	 * protected.
 	 */
 	readonly storage = workspaceStorage(this.ctx.storage)
-	readonly shell = new WorkerShellBackend({
-		id: 'shell' satisfies Backend,
-		loader: this.env.LOADER,
-		workspace: { binding: COMPUTER_BINDING, id: this.ctx.id.toString() },
-		ctx: this.ctx,
-		commands: [jq],
-	})
+	readonly shell = createComputerShell(
+		{
+			id: 'shell' satisfies Backend,
+			loader: this.env.LOADER,
+			workspace: { binding: COMPUTER_BINDING, id: this.ctx.id.toString() },
+			ctx: this.ctx,
+			commands: [jq],
+		},
+		{ getWorkspace: () => this.__getWorkspaceStub() },
+		this.ctx,
+	)
 	readonly container = new CloudflareContainerBackend({
 		id: 'container' satisfies Backend,
 		container: () => containerHost(this),
@@ -344,7 +350,9 @@ export class Computer extends withWorkspace(ComputerBase, (self) => ({
 
 	async readFile(path: string): Promise<ComputerResult<Uint8Array>> {
 		using workspace = await getWorkspace(this)
-		return await attempt(async () => new Response(await workspace.fs.readFile(path)).bytes())
+		return await attempt(
+			async () => new Uint8Array(await new Response(await workspace.fs.readFile(path)).arrayBuffer()),
+		)
 	}
 
 	async writeFile(path: string, content: string): Promise<ComputerResult<null>> {

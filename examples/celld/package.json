@@ -4,6 +4,9 @@
 	"type": "module",
 	"scripts": {
 		"build": "bun scripts/build.ts",
+		"copilot:login": "bun scripts/copilot-login.ts",
+		"copilot:smoke": "bun scripts/copilot-smoke.ts",
+		"workspace:smoke:build": "bun scripts/workspace-smoke-build.ts",
 		"dev:vars": "bun scripts/dev-vars.ts",
 		"dev": "bun run dev:vars && bun run build && celld dev .",
 		"typecheck": "tsc --noEmit -p tsconfig.json"
@@ -19,11 +22,13 @@
 		"@humanlayer/fold-core": "catalog:",
 		"@platformatic/vfs": "catalog:",
 		"alchemy": "catalog:",
-		"effect": "catalog:"
+		"effect": "catalog:",
+		"pako": "1.0.11"
 	},
 	"devDependencies": {
 		"@cloudflare/workers-types": "catalog:",
 		"@types/bun": "catalog:",
+		"@types/pako": "2.0.4",
 		"typescript": "catalog:"
 	}
 }

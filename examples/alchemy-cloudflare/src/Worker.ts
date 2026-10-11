@@ -6,6 +6,7 @@ import * as Cloudflare from 'alchemy/Cloudflare'
 import { Effect, Layer } from 'effect'
 import { FetchHttpClient, HttpRouter } from 'effect/http'
 
+import { AgentModel } from './AgentModel'
 import { AgentSession, AgentSessionDOLive, AgentSessions } from './AgentSessionDO'
 import { AutoLabel } from './AutoLabel'
 import { DELIVERY_API_BINDING, DeliveryApi } from './DeliveryApi'
@@ -30,6 +31,7 @@ const WorkerLive = ChannelsDeliveryMailboxesLive.pipe(
 	Layer.provideMerge(DeliveryMailboxDOLive),
 	Layer.provideMerge(AgentSessionsLive),
 	Layer.provideMerge(AgentSessionDOLive),
+	Layer.provideMerge(AgentModel.layerOpenAI),
 	Layer.provideMerge(DeliveryApi.layerSelfBinding),
 	Layer.provideMerge(AutoLabel.layer),
 	Layer.provideMerge(GitHubApiLive),

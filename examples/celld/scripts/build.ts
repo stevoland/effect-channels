@@ -8,6 +8,8 @@ import * as NodeServices from '@effect/platform-node/NodeServices'
 import { WorkerBundle } from 'alchemy/Cloudflare/Workers/Sources/Rolldown'
 import { Effect } from 'effect'
 
+import { celldComputerBuildPlugin } from './ComputerBuildPlugin'
+
 const program = Effect.gen(function* () {
 	const bundler = yield* WorkerBundle
 	const { files } = yield* bundler.build({
@@ -17,6 +19,9 @@ const program = Effect.gen(function* () {
 		entry: { kind: 'external' },
 		stack: { name: 'ChannelsCelld', stage: 'celld' },
 		extraOptions: {
+			input: {
+				plugins: [celldComputerBuildPlugin],
+			},
 			/** celld deploys one JavaScript module, so the chunks Cloudflare would load on demand are inlined. */
 			output: { dir: new URL('../dist', import.meta.url).pathname, codeSplitting: false, sourcemap: false },
 		},

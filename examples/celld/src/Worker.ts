@@ -16,6 +16,7 @@ import { AutoLabel } from '../../alchemy-cloudflare/src/AutoLabel'
 import { DELIVERY_API_BINDING, DeliveryApi } from '../../alchemy-cloudflare/src/DeliveryApi'
 import { DeliveryMailbox, DeliveryMailboxDOLive } from '../../alchemy-cloudflare/src/DeliveryMailboxDO'
 import { bot } from '../../alchemy-cloudflare/src/GithubBot'
+import { CopilotModelLive } from './CopilotModel'
 
 const ChannelsDeliveryMailboxesLive = Layer.effect(DeliveryMailboxes, DeliveryMailbox)
 
@@ -37,6 +38,7 @@ const WorkerLive = ChannelsDeliveryMailboxesLive.pipe(
 	Layer.provideMerge(DeliveryMailboxDOLive),
 	Layer.provideMerge(AgentSessionsLive),
 	Layer.provideMerge(AgentSessionDOLive),
+	Layer.provideMerge(CopilotModelLive),
 	Layer.provideMerge(DeliveryApi.layerSelfBinding),
 	Layer.provideMerge(AutoLabelDisabled),
 	Layer.provideMerge(GitHubApiLive),

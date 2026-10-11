@@ -72,6 +72,9 @@ web_modules/
 .env
 .env.*
 !.env.example
+.dev.vars
+.copilot.json
+.celld/
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache
